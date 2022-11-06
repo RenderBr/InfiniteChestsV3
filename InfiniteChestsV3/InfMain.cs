@@ -61,14 +61,27 @@ namespace InfiniteChestsV3
 		public static bool lockChests = false;
 		public static bool usingInfChests = true;
 
+		public static void AddAllChest()
+		{
+			List<Chest> allChests = DB.GetAllChests();
+			for (int i = 0; i < Main.chest.Length; i++)
+			{
+				Main.chest[i] = null;
+			}
+			for (int j = 0; j <= allChests.Count - 1; j++)
+			{
+				Main.chest[j] = allChests[j];
+			}
+		}
+
 		private void OnGameInitialize(EventArgs args)
 		{
 			DB.Connect();
-
 			Commands.ChatCommands.Add(new Command("ic.use", ChestCMD, "chest") { AllowServer = false });
 			Commands.ChatCommands.Add(new Command("ic.convert", ConvChestsAsync, "convchests"));
 			Commands.ChatCommands.Add(new Command("ic.prune", PruneChestsAsync, "prunechests"));
 			Commands.ChatCommands.Add(new Command("ic.transfer", TransferAsync, "transferchests"));
+			AddAllChest();
 		}
 
 		private async void OnWorldLoadAsync(EventArgs args)
@@ -524,12 +537,12 @@ namespace InfiniteChestsV3
 										else if (chest.userid != player.Account.ID && chest.userid != -1 && !player.HasPermission("ic.edit"))
 										{
 											player.SendErrorMessage("This chest is protected.");
-											player.SendTileSquare(tilex, tiley, 3);
+											player.SendTileSquareCentered(tilex, tiley, 3);
 										}
 										//check for empty chest
 										else if (!chest.isEmpty)
 										{
-											player.SendTileSquare(tilex, tiley, 3);
+											player.SendTileSquareCentered(tilex, tiley, 3);
 										}
 										else
 										{

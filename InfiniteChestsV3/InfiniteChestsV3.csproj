@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0-rc.2.22472.11" />
+    <PackageReference Include="MySql.Data" Version="8.0.31" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.346202">
       <PrivateAssets>all</PrivateAssets>
@@ -17,9 +18,6 @@
   <ItemGroup>
     <Reference Include="ModFramework">
       <HintPath>J:\Downloads\TShock-Beta-win-x64-Release-4\bin\ModFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data">
-      <HintPath>J:\Downloads\TShock-Beta-win-x64-Release-4\bin\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="OTAPI">
       <HintPath>J:\Downloads\TShock-Beta-win-x64-Release-4\bin\OTAPI.dll</HintPath>
