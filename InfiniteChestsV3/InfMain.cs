@@ -96,6 +96,7 @@ namespace InfiniteChestsV3
 
 		private void OnGreet(GreetPlayerEventArgs args)
 		{
+			AddAllChest();
 			var player = TShock.Players[args.Who];
 			if (player == null)
 				return;
