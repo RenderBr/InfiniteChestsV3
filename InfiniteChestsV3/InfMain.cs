@@ -81,7 +81,6 @@ namespace InfiniteChestsV3
 			Commands.ChatCommands.Add(new Command("ic.convert", ConvChestsAsync, "convchests"));
 			Commands.ChatCommands.Add(new Command("ic.prune", PruneChestsAsync, "prunechests"));
 			Commands.ChatCommands.Add(new Command("ic.transfer", TransferAsync, "transferchests"));
-			AddAllChest();
 		}
 
 		private async void OnWorldLoadAsync(EventArgs args)
@@ -92,11 +91,12 @@ namespace InfiniteChestsV3
 				TSPlayer.Server.SendInfoMessage("Converted " + count + " chests.");
 				lockChests = false;
 			});
-		}
+            AddAllChest();
 
-		private void OnGreet(GreetPlayerEventArgs args)
+        }
+
+        private void OnGreet(GreetPlayerEventArgs args)
 		{
-			AddAllChest();
 			var player = TShock.Players[args.Who];
 			if (player == null)
 				return;
@@ -482,21 +482,23 @@ namespace InfiniteChestsV3
 								chesttype = 467;
 							else
 								throw new Exception();
+							int success = 0;
 
-							if (action == 0 || action == 2 || action == 4)
+                            if (action == 0 || action == 2 || action == 4)
 							{
 								if (TShock.Regions.CanBuild(tilex, tiley, TShock.Players[index]))
 								{
+									InfChest newChest;
 									Task.Factory.StartNew(() =>
 									{
 										int temp_tile_x = tilex;
 										if (action == 2)
 											temp_tile_x--;
-										InfChest newChest = new InfChest(TShock.Players[index].HasPermission("ic.protect") ? TShock.Players[index].Account.ID : -1, temp_tile_x, tiley - 1, Main.worldID);
+										newChest = new InfChest(TShock.Players[index].HasPermission("ic.protect") ? TShock.Players[index].Account.ID : -1, temp_tile_x, tiley - 1, Main.worldID);
 										DB.AddChest(newChest);
 									});
 
-									int success = WorldGen.PlaceChest(tilex, tiley, (ushort)chesttype, false, style);
+									success = WorldGen.PlaceChest(tilex, tiley, (ushort)chesttype, false, style);
 									if (success == -1)
 									{
 										NetMessage.TrySendData((int)PacketTypes.PlaceChest, index, -1, null, action, tilex, tiley, style);
@@ -504,10 +506,14 @@ namespace InfiniteChestsV3
 									}
 									else
 									{
-										Main.chest[0] = null;
+										InfChest c = DB.GetChest(tilex, tiley);
+										Chest chest = new Chest() { item = c.items, x = tilex, y = tiley };
+										Main.chest[success] = chest;
 										NetMessage.SendData((int)PacketTypes.PlaceChest, -1, -1, null, action, tilex, tiley, style);
-									}
-								}
+										
+
+                                    }
+                                }
 							}
 							else
 							{
@@ -563,9 +569,14 @@ namespace InfiniteChestsV3
 									#endregion
 								}
 							}
-
+                            Main.chest[success] = chest;
+                            TSPlayer.All.SendData(PacketTypes.PlaceChest, "", action, tilex, tiley, style);
+                            foreach (TSPlayer player in TShock.Players)
+                            {
+                                player.SendTileSquareCentered(player.TileX, player.TileY, 32);
+                            }
 #if DEBUG
-							File.AppendAllText("debug.txt", $"[IN] 34 PlaceChest: Action = {action} | Tile X = {tilex} | Tile Y = {tiley} | Style = {style}\n");
+                            File.AppendAllText("debug.txt", $"[IN] 34 PlaceChest: Action = {action} | Tile X = {tilex} | Tile Y = {tiley} | Style = {style}\n");
 #endif
 							break;
 						}
@@ -703,7 +714,7 @@ namespace InfiniteChestsV3
 
 					Item exactmatch = null;
 					List<Item> partialMatches = new List<Item>();
-					for (int i = 0; i < Main.maxItemTypes; i++)
+					for (int i = 0; i < 5456; i++)
 					{
 						Item item = new Item();
 						item.SetDefaults(i);
