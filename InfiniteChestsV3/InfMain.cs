@@ -61,6 +61,7 @@ namespace InfiniteChestsV3
 		public static bool lockChests = false;
 		public static bool usingInfChests = true;
 
+
 		private void OnGameInitialize(EventArgs args)
 		{
 			DB.Connect();
@@ -79,6 +80,7 @@ namespace InfiniteChestsV3
 				TSPlayer.Server.SendInfoMessage("Converted " + count + " chests.");
 				lockChests = false;
 			});
+			AddAllChest();
 		}
 
 		private void OnGreet(GreetPlayerEventArgs args)
@@ -95,7 +97,20 @@ namespace InfiniteChestsV3
 			player.SetData(PIString, pinfo);
 		}
 
-		private void OnGetData(GetDataEventArgs args)
+        public static void AddAllChest()
+        {
+            List<Chest> allChests = DB.GetAllChests();
+            for (int i = 0; i < Main.chest.Length; i++)
+            {
+                Main.chest[i] = null;
+            }
+            for (int j = 0; j <= allChests.Count - 1; j++)
+            {
+                Main.chest[j] = allChests[j];
+            }
+        }
+
+        private void OnGetData(GetDataEventArgs args)
 		{
 			if (args.Handled)
 				return;
