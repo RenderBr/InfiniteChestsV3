@@ -844,6 +844,7 @@ namespace InfiniteChestsV3
 					if (args.Parameters.Count != 2) // /chest refill <time>
 					{
 						args.Player.SendErrorMessage("Invalid syntax: /chest refill <seconds>");
+      						args.Player.SendInfoMessage("Use -1 for no refill time.");
 						break;
 					}
 					int refillTime;
